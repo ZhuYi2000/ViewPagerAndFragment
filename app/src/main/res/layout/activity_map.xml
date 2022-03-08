@@ -27,6 +27,13 @@
             android:onClick="openSearchActivity"
             android:text="点击搜索地点"/>
 
+        <Button
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="openPoiSearchActivity"
+            android:text="POI搜索"/>
+
 
     </LinearLayout>
 

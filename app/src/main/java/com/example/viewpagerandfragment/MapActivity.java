@@ -3,23 +3,33 @@ package com.example.viewpagerandfragment;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.MapsInitializer;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.navi.AmapNaviPage;
 import com.amap.api.navi.AmapNaviParams;
 import com.amap.api.navi.AmapNaviType;
 import com.amap.api.navi.AmapPageType;
+import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.core.PoiItem;
+import com.amap.api.services.poisearch.PoiResult;
+import com.amap.api.services.poisearch.PoiSearch;
 
-public class MapActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity implements  AMap.OnMyLocationChangeListener{
 
     private MapView mMapView = null;
     private AMap aMap = null;
+    private LatLonPoint currentLocation = new LatLonPoint(0,0);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +65,12 @@ public class MapActivity extends AppCompatActivity {
         aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
 
         aMap.moveCamera(CameraUpdateFactory.zoomTo(16));
+
+        aMap.setOnMyLocationChangeListener(this);
+
+        //待完善POI搜索后传参过来的结果
+        LatLng latLng = new LatLng(36.658676,117.145461);//纬度，经度
+        final Marker marker = aMap.addMarker(new MarkerOptions().position(latLng).title("KFC").snippet("汉峪金谷KFC"));
     }
 
     @Override
@@ -85,9 +101,25 @@ public class MapActivity extends AppCompatActivity {
         mMapView.onSaveInstanceState(outState);
     }
 
+    //打开搜索页面
     public void openSearchActivity(View view) {
         Intent search_intent = new Intent(this,SearchActivity.class);
         startActivity(search_intent);
+    }
+
+    //打开poi搜索界面，传递当前经纬度
+    public void openPoiSearchActivity(View view) {
+        Intent poi_search_intent = new Intent(this,PoiSearchActivity.class);
+        poi_search_intent.putExtra("Lon",currentLocation.getLongitude());
+        poi_search_intent.putExtra("Lat",currentLocation.getLatitude());
+        startActivity(poi_search_intent);
+    }
+
+    //获取经纬度
+    @Override
+    public void onMyLocationChange(Location location) {
+        currentLocation.setLongitude(location.getLongitude());
+        currentLocation.setLatitude(location.getLatitude());
     }
 /*
     public void openNavi(View view) {

@@ -87,6 +87,7 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, In
 
     }
 
+    //inputTips.requestInputtipsAsyn() 的回调接口，将response中的数据导入到adapter
     @Override
     public void onGetInputtips(List<Tip> list, int i) {
         Log.e("zhu","条目数量："+list.size());
@@ -104,6 +105,9 @@ public class SearchActivity extends AppCompatActivity implements TextWatcher, In
     t：t = 0（驾车）= 1（公交）= 2（步行）= 3（骑行）= 4（火车）= 5（长途客车）
     *
     * */
+
+    //目前是搜索完毕后，点击条目即开始导航，可以考虑增加一个确认弹窗。以及最终效果应该是点击地图上的宝可梦，
+    // 弹窗出来宝可梦的一些信息，然后有个按钮可以让用户导航至其所在地
 
     @Override
     public void onItemClick(RecyclerView parent, View view, int position, Tip data) {
