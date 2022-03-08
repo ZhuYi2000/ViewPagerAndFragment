@@ -13,14 +13,26 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@color/purple_200"/>
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center">
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:text="跳转"
         android:textSize="26sp"
         android:onClick="openNewActivity"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="打开地图"
+        android:textSize="26sp"
+        android:onClick="openMapActivity"/>
+</LinearLayout>
+
 
 
 </LinearLayout>

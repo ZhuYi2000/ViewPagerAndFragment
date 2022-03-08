@@ -49,6 +49,7 @@ public class BlankFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+            //参数传递
             mTextString = getArguments().getString(ARG_TEXT);
         }
     }

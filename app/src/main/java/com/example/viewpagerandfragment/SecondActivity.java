@@ -25,28 +25,6 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
         initTabView();
     }
 
-    private void initTabView() {
-        llChat = findViewById(R.id.id_tab_weixin);
-        llChat.setOnClickListener(this);
-
-        llContacts = findViewById(R.id.id_tab_contact);
-        llContacts.setOnClickListener(this);
-
-        llFind = findViewById(R.id.id_tab_find);
-        llFind.setOnClickListener(this);
-
-        llProfile = findViewById(R.id.id_tab_profile);
-        llProfile.setOnClickListener(this);
-
-        ivChat = findViewById(R.id.tab_iv_weixin);
-        ivContacts = findViewById(R.id.tab_iv_contact);
-        ivFind = findViewById(R.id.tab_iv_find);
-        ivProfile = findViewById(R.id.tab_iv_profile);
-
-        ivChat.setSelected(true);
-        ivCurrent = ivChat;
-    }
-
     private void initPager() {
         viewPager = findViewById(R.id.secondViewPager);
         ArrayList<Fragment> fragments = new ArrayList<>();
@@ -77,6 +55,28 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
                 super.onPageScrollStateChanged(state);
             }
         });
+    }
+
+    private void initTabView() {
+        llChat = findViewById(R.id.id_tab_weixin);
+        llChat.setOnClickListener(this);
+
+        llContacts = findViewById(R.id.id_tab_contact);
+        llContacts.setOnClickListener(this);
+
+        llFind = findViewById(R.id.id_tab_find);
+        llFind.setOnClickListener(this);
+
+        llProfile = findViewById(R.id.id_tab_profile);
+        llProfile.setOnClickListener(this);
+
+        ivChat = findViewById(R.id.tab_iv_weixin);
+        ivContacts = findViewById(R.id.tab_iv_contact);
+        ivFind = findViewById(R.id.tab_iv_find);
+        ivProfile = findViewById(R.id.tab_iv_profile);
+
+        ivChat.setSelected(true);
+        ivCurrent = ivChat;
     }
 
     private void changeTab(int position) {

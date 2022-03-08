@@ -25,4 +25,9 @@ public class MainActivity extends AppCompatActivity {
         Intent second_intent = new Intent(this,SecondActivity.class);
         startActivity(second_intent);
     }
+
+    public void openMapActivity(View view) {
+        Intent map_intent = new Intent(this,MapActivity.class);
+        startActivity(map_intent);
+    }
 }

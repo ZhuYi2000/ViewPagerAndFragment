@@ -50,7 +50,7 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
     }
 
 
-    //创建viewholder：渲染UI，将xml视图作为参数传递给viewholder
+    //创建viewholder：渲染UI，将对应xml视图作为参数传递给viewholder
     @NonNull
     @Override
     public ViewPagerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -79,7 +79,7 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
 
     @Override
     public int getItemCount() {
-        return 4;  //是item的个数，即左右滑动共有几个页面
+        return 10;  //是item的个数，即左右滑动共有几个页面
     }
 
 
