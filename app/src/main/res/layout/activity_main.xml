@@ -22,15 +22,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="跳转"
-        android:textSize="26sp"
+        android:textSize="20sp"
         android:onClick="openNewActivity"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="10dp"
         android:text="打开地图"
-        android:textSize="26sp"
+        android:textSize="20sp"
         android:onClick="openMapActivity"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="测试云数据库"
+        android:textSize="20sp"
+        android:onClick="testOnlineDatabase"/>
 </LinearLayout>
 
 
