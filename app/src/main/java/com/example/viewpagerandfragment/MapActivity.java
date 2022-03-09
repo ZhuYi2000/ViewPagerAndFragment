@@ -1,12 +1,19 @@
 package com.example.viewpagerandfragment;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
@@ -20,16 +27,42 @@ import com.amap.api.navi.AmapNaviPage;
 import com.amap.api.navi.AmapNaviParams;
 import com.amap.api.navi.AmapNaviType;
 import com.amap.api.navi.AmapPageType;
+import com.amap.api.services.core.AMapException;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
 
-public class MapActivity extends AppCompatActivity implements  AMap.OnMyLocationChangeListener{
+import java.util.ArrayList;
+
+public class MapActivity extends AppCompatActivity implements  AMap.OnMyLocationChangeListener, PoiSearch.OnPoiSearchListener {
 
     private MapView mMapView = null;
     private AMap aMap = null;
-    private LatLonPoint currentLocation = new LatLonPoint(0,0);
+    private LatLonPoint currentLocation = new LatLonPoint(0,0);//当前位置
+
+    private ArrayList<String> targetIdList = new ArrayList<String>();
+    private PoiSearch poiSearch;
+    private ArrayList<Marker> markerList = new ArrayList<Marker>();
+
+    //注册协议，获取启动器-ActivityResultLauncher,第二个参数是回调的处理函数，将结果存储到targetIdList中
+    ActivityResultLauncher launcher = registerForActivityResult(
+            new ResultContract(),
+            new ActivityResultCallback<ArrayList<String>>() {
+        @Override
+        public void onActivityResult(ArrayList<String> result) {
+            //这个result是parseResult传递来的
+            if(result == null){
+                Toast.makeText(MapActivity.this, "关键词无结果！", Toast.LENGTH_SHORT).show();
+            }else{
+                targetIdList = result;
+            }
+//            int size = result.size();
+//            for(int i=0;i<size;i++){
+//                Log.e("zhu",result.get(i));
+//            }
+        }
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +101,10 @@ public class MapActivity extends AppCompatActivity implements  AMap.OnMyLocation
 
         aMap.setOnMyLocationChangeListener(this);
 
+        //地图上进行点标记
         //待完善POI搜索后传参过来的结果
-        LatLng latLng = new LatLng(36.658676,117.145461);//纬度，经度
-        final Marker marker = aMap.addMarker(new MarkerOptions().position(latLng).title("KFC").snippet("汉峪金谷KFC"));
+//        LatLng latLng = new LatLng(36.658676,117.145461);//纬度，经度
+//        final Marker marker = aMap.addMarker(new MarkerOptions().position(latLng).title("KFC").snippet("汉峪金谷KFC"));
     }
 
     @Override
@@ -78,6 +112,7 @@ public class MapActivity extends AppCompatActivity implements  AMap.OnMyLocation
         super.onDestroy();
         //在activity执行onDestroy时执行mMapView.onDestroy()，销毁地图
         mMapView.onDestroy();
+        //Log.e("zhu","Destroy");
     }
 
     @Override
@@ -85,6 +120,27 @@ public class MapActivity extends AppCompatActivity implements  AMap.OnMyLocation
         super.onResume();
         //在activity执行onResume时执行mMapView.onResume ()，重新绘制加载地图
         mMapView.onResume();
+        //清除上一次的点标记
+        if(!markerList.isEmpty()){
+            for(int i=0;i<markerList.size();i++){
+                markerList.get(i).destroy();
+            }
+        }
+        //非空的时候绘制点
+        if(!targetIdList.isEmpty()){
+            try {
+                poiSearch = new PoiSearch(this, null);
+                poiSearch.setOnPoiSearchListener(this);
+                for(int i=0;i<targetIdList.size();i++){
+                    Log.e("zhu","Resume时候异步查询ID："+targetIdList.get(0));
+                    poiSearch.searchPOIIdAsyn(targetIdList.get(i));// 异步搜索
+                }
+                aMap.moveCamera(CameraUpdateFactory.zoomTo(14));
+            } catch (AMapException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     @Override
@@ -92,6 +148,7 @@ public class MapActivity extends AppCompatActivity implements  AMap.OnMyLocation
         super.onPause();
         //在activity执行onPause时执行mMapView.onPause ()，暂停地图的绘制
         mMapView.onPause();
+        //Log.e("zhu","pause");
     }
 
     @Override
@@ -109,18 +166,62 @@ public class MapActivity extends AppCompatActivity implements  AMap.OnMyLocation
 
     //打开poi搜索界面，传递当前经纬度
     public void openPoiSearchActivity(View view) {
-        Intent poi_search_intent = new Intent(this,PoiSearchActivity.class);
-        poi_search_intent.putExtra("Lon",currentLocation.getLongitude());
-        poi_search_intent.putExtra("Lat",currentLocation.getLatitude());
-        startActivity(poi_search_intent);
+        launcher.launch(true);
+        //startActivity(poi_search_intent);
     }
 
-    //获取经纬度
+    //实现listener,获取经纬度
     @Override
     public void onMyLocationChange(Location location) {
         currentLocation.setLongitude(location.getLongitude());
         currentLocation.setLatitude(location.getLatitude());
     }
+
+
+    //对于页面传递过来的poiId进行搜索后，返回的结果
+    @Override
+    public void onPoiSearched(PoiResult poiResult, int i) {
+
+    }
+
+    @Override
+    public void onPoiItemSearched(PoiItem poiItem, int rCode) {
+        Log.e("zhu","查询结果如下");
+        Log.e("zhu","名称："+poiItem.getTitle());
+        Log.e("zhu","地址："+poiItem.getSnippet());
+        Log.e("zhu","经度"+poiItem.getLatLonPoint().getLongitude());
+        Log.e("zhu","纬度"+poiItem.getLatLonPoint().getLatitude());
+        Log.e("zhu","————————————————————————————————————");
+
+        LatLng latLng = new LatLng(poiItem.getLatLonPoint().getLatitude(),
+                poiItem.getLatLonPoint().getLongitude());//纬度，经度
+        final Marker marker = aMap.addMarker(new MarkerOptions().position(latLng).
+                title(poiItem.getTitle()).snippet(poiItem.getSnippet()));
+        markerList.add(marker);
+    }
+
+
+    class ResultContract extends ActivityResultContract<Boolean, ArrayList<String>>{
+
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull Context context, Boolean input) {
+            Intent poi_search_intent = new Intent(MapActivity.this,PoiSearchActivity.class);
+            poi_search_intent.putExtra("Lon",currentLocation.getLongitude());
+            poi_search_intent.putExtra("Lat",currentLocation.getLatitude());
+            return poi_search_intent;
+        }
+
+        @Override
+        public ArrayList<String> parseResult(int resultCode, @Nullable Intent intent) {
+            if(resultCode == RESULT_OK){
+                return intent.getStringArrayListExtra("poiIdList");
+            }else{
+                return null;
+            }
+        }
+    }
+
 /*
     public void openNavi(View view) {
         //构建导航组件配置类，没有传入起点，所以起点默认为 “我的位置”
